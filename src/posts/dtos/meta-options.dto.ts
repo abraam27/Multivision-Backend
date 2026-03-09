@@ -1,12 +1,12 @@
-import { IsNotEmpty, IsString, MinLength, MaxLength } from "class-validator";
+import { IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class MetaOptionsDto {
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(3)
-    @MaxLength(20)
-    key: string;
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(20)
+  key: string;
 
-    @IsNotEmpty()
-    value: any;
+  @IsNotEmpty()
+  value: any;
 }

@@ -8,16 +8,19 @@ async function bootstrap() {
   /**
    * Global pipes for validation
    */
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   /**
    * Swagger configuration
    */
-  const config = new DocumentBuilder().setTitle('Multivision API')
+  const config = new DocumentBuilder()
+    .setTitle('Multivision API')
     .setDescription('API for the Multivision project')
     .setVersion('1.0')
     .addServer('http://localhost:8000', 'Localhost')
