@@ -15,6 +15,11 @@ import { CreatePostDto } from './dtos/create-post.dto';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Get()
+  getPosts() {
+    return this.postsService.getPosts();
+  }
+
   @Get(':userId')
   getPostsByUserId(@Param('userId', ParseIntPipe) userId: number) {
     return this.postsService.getPostsByUserId(userId);

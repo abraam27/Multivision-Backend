@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { PostType } from './enums/postType.enum';
 import { PostStatus } from './enums/postStatus.enum';
+import { User } from 'src/users/user.schema';
+import { Tag } from 'src/tags/tag.schema';
 
 @Schema({ collection: 'posts' })
 export class Post extends Document {
@@ -52,10 +54,17 @@ export class Post extends Document {
   publishedOn: Date;
 
   @Prop({
-    required: false,
-    type: [String],
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
   })
-  tags: string[];
+  author: User;
+
+  @Prop({
+    required: false,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Tag.name }],
+  })
+  tags: Tag[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
