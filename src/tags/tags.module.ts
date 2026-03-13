@@ -8,5 +8,6 @@ import { MongooseModule } from '@nestjs/mongoose';
   controllers: [TagsController],
   providers: [TagsService],
   imports: [MongooseModule.forFeature([{ name: Tag.name, schema: TagSchema }])],
+  exports: [TagsService],
 })
 export class TagsModule {}

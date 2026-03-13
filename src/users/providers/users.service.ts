@@ -1,15 +1,19 @@
 import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
   forwardRef,
   Inject,
   Injectable,
-  UnauthorizedException,
+  NotFoundException,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { User } from '../user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dtos/create-user.dto';
-
+import { ConfigService } from '@nestjs/config';
 /**
  * UsersService is a service that provides user-related functionality
  */
@@ -23,6 +27,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
   /**
    * Users
@@ -50,30 +55,20 @@ export class UsersService {
    * @returns An array of users
    */
   getAllUsers(limit: number, page: number) {
-    if (!this.authService.isAuth()) {
-      throw new UnauthorizedException('Unauthorized');
-    }
     console.log(limit, page);
-    return [
+    throw new HttpException(
       {
-        id: 1,
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        password: 'password',
+        statusCode: HttpStatus.NOT_IMPLEMENTED,
+        error: 'Not implemented',
+        fileName: 'users.service.ts',
+        lineNumber: 63,
       },
+      HttpStatus.NOT_IMPLEMENTED,
       {
-        id: 2,
-        name: 'Jane Doe',
-        email: 'jane.doe@example.com',
-        password: 'password',
+        description: 'Not implemented',
+        cause: new Error(),
       },
-      {
-        id: 3,
-        name: 'Jim Doe',
-        email: 'jim.doe@example.com',
-        password: 'password',
-      },
-    ];
+    );
   }
 
   /**
@@ -81,12 +76,55 @@ export class UsersService {
    * @param id - The id of the user to return
    * @returns The user
    */
-  getUserById(id: number) {
-    return this.users.find((user) => user.id === id);
+  async getUserById(id: string): Promise<User> {
+    let user: User | null = null;
+    try {
+      user = await this.userModel.findById(id);
+    } catch (error) {
+      console.log(error.message);
+      throw new RequestTimeoutException(
+        'Unable to process request at the moment, please try again later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const user = new this.userModel(createUserDto);
-    return await user.save();
+    let existingUser: User | null = null;
+    try {
+      existingUser = await this.userModel.findOne({
+        email: createUserDto.email,
+      });
+    } catch (error) {
+      console.log(error.message);
+      throw new RequestTimeoutException(
+        'Unable to process request at the moment, please try again later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
+    if (existingUser) {
+      throw new BadRequestException('User already exists');
+    }
+
+    try {
+      const user = new this.userModel(createUserDto);
+      return await user.save();
+    } catch (error) {
+      console.log(error.message);
+      throw new RequestTimeoutException(
+        'Unable to process request at the moment, please try again later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
   }
 }
