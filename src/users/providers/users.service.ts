@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   forwardRef,
@@ -14,6 +13,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserProvider } from './create-user.provider';
+import { FindUserByEmailProvider } from './find-user-by-email.provider';
 /**
  * UsersService is a service that provides user-related functionality
  */
@@ -28,6 +29,8 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly createUserProvider: CreateUserProvider,
+    private readonly findUserByEmailProvider: FindUserByEmailProvider,
   ) {}
   /**
    * Users
@@ -96,35 +99,10 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    let existingUser: User | null = null;
-    try {
-      existingUser = await this.userModel.findOne({
-        email: createUserDto.email,
-      });
-    } catch (error) {
-      console.log(error.message);
-      throw new RequestTimeoutException(
-        'Unable to process request at the moment, please try again later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
-    if (existingUser) {
-      throw new BadRequestException('User already exists');
-    }
+    return await this.createUserProvider.createUser(createUserDto);
+  }
 
-    try {
-      const user = new this.userModel(createUserDto);
-      return await user.save();
-    } catch (error) {
-      console.log(error.message);
-      throw new RequestTimeoutException(
-        'Unable to process request at the moment, please try again later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
+  async findUserByEmail(email: string): Promise<User> {
+    return await this.findUserByEmailProvider.findUserByEmail(email);
   }
 }

@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
 
 export default registerAs('profileConfig', () => ({
-  profileApiKey: process.env.PROFILE_API_KEY ?? '',
+  profileApiKey: parseInt(process.env.PROFILE_API_KEY ?? '3600', 10),
 }));
