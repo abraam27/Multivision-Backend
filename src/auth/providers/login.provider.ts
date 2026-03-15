@@ -51,15 +51,18 @@ export class LoginProvider {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const accessToken = await this.jwtService.signAsync({
-            id: user._id,
-            email: user.email,
-        }, {
-            secret: this.configService.get('jwt.secret'),
-            audience: this.configService.get('jwt.audience'),
-            issuer: this.configService.get('jwt.issuer'),
-            expiresIn: this.configService.get('jwt.ttl'),
-        });
+        const accessToken = await this.jwtService.signAsync(
+            {
+                id: user._id,
+                email: user.email,
+            },
+            {
+                secret: this.configService.get<string>('jwt.secret'),
+                audience: this.configService.get<string>('jwt.audience'),
+                issuer: this.configService.get<string>('jwt.issuer'),
+                expiresIn: this.configService.get<number>('jwt.ttl'),
+            },
+        );
 
         return {
             access_token: accessToken,

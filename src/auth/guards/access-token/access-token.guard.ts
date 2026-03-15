@@ -28,7 +28,6 @@ export class AccessTokenGuard implements CanActivate {
         secret,
       });
       request[REQUEST_USER_KEY] = payload;
-      console.log(request[REQUEST_USER_KEY], payload);
     } catch (error) {
       console.log((error as Error).message);
       throw new UnauthorizedException('Invalid token', {

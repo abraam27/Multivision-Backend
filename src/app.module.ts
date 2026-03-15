@@ -11,6 +11,12 @@ import { PaginationModule } from './common/pagination/pagination.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import profileConfig from './config/profile.config';
+import jwtConfig from './config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
+import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
+import { APP_GUARD } from '@nestjs/core';
+import environmentValidation from './config/enviroment.validation';
+
 const ENV = process.env.NODE_ENV ?? 'develop';
 @Module({
   imports: [
@@ -21,6 +27,7 @@ const ENV = process.env.NODE_ENV ?? 'develop';
       isGlobal: true,
       envFilePath: !ENV ? 'env' : `.env.${ENV}`,
       load: [appConfig, databaseConfig, profileConfig],
+      validationSchema: environmentValidation,
     }),
     MongooseModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
@@ -31,8 +38,13 @@ const ENV = process.env.NODE_ENV ?? 'develop';
     }),
     TagsModule,
     PaginationModule,
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+    ConfigModule.forFeature(jwtConfig),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: AccessTokenGuard, 
+  }],
 })
 export class AppModule {}
