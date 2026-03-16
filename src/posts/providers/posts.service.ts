@@ -16,6 +16,8 @@ import { UpdatePostDto } from '../dtos/update-post.dto';
 import { GetPostsDto } from '../dtos/get-posts.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { CreatePostProvider } from './create-post.provider';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Injectable()
 export class PostsService {
@@ -24,6 +26,7 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<Post>,
     private readonly tagsService: TagsService,
     private readonly paginationProvider: PaginationProvider,
+    private readonly createPostProvider: CreatePostProvider,
   ) {}
 
   async getPosts(getPostsDto: GetPostsDto): Promise<Paginated<Post>> {
@@ -61,9 +64,8 @@ export class PostsService {
     ];
   }
 
-  async createPost(createPostDto: CreatePostDto) {
-    const post = new this.postModel(createPostDto);
-    return await post.save();
+  async createPost(createPostDto: CreatePostDto, activeUser: ActiveUserData) {
+    return await this.createPostProvider.createPost(createPostDto, activeUser);
   }
 
   async updatePost(postId: string, updatePostDto: UpdatePostDto) {

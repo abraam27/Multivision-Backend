@@ -79,9 +79,4 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => MetaOptionsDto)
   metaOptions?: MetaOptionsDto[];
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  author: string;
 }
