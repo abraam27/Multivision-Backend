@@ -7,4 +7,7 @@ export default registerAs('jwt', () => ({
   ttl: process.env.JWT_TOKEN_TTL
     ? parseInt(process.env.JWT_TOKEN_TTL, 10)
     : 3600,
+  refreshTtl: process.env.JWT_REFRESH_TOKEN_TTL
+    ? parseInt(process.env.JWT_REFRESH_TOKEN_TTL, 10)
+    : 86400,
 }));

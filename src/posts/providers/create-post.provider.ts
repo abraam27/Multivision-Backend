@@ -28,7 +28,7 @@ export class CreatePostProvider {
     let tags: Tag[] | null = null;
     let author: User | null = null;
     try {
-      author = await this.usersService.getUserById(activeUser.id);
+      author = await this.usersService.getUserById(activeUser.userId);
       tags = await this.tagsService.findMultipleTags(createPostDto.tags ?? []);
     } catch (error) {
       console.log((error as Error).message);

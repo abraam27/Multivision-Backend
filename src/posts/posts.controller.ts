@@ -25,7 +25,10 @@ export class PostsController {
 
   @Post()
   @Auth(AuthType.Bearer)
-  createPost(@Body() createPostDto: CreatePostDto, @ActiveUser() activeUser: ActiveUserData) {
+  createPost(
+    @Body() createPostDto: CreatePostDto,
+    @ActiveUser() activeUser: ActiveUserData,
+  ) {
     return this.postsService.createPost(createPostDto, activeUser);
   }
 }
