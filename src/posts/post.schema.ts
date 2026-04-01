@@ -5,7 +5,11 @@ import { PostStatus } from './enums/postStatus.enum';
 import { User } from 'src/users/user.schema';
 import { Tag } from 'src/tags/tag.schema';
 
-@Schema({ collection: 'posts' })
+@Schema({
+  collection: 'posts',
+  versionKey: false,
+  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+})
 export class Post extends Document {
   @Prop({
     required: true,
