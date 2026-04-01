@@ -37,8 +37,8 @@ UserSchema.set('toJSON', {
     delete rest.password;
     const id = _id ? _id.toString() : '';
     return {
-      ...rest,
       id,
+      ...rest,
     };
   },
 });
